@@ -47,18 +47,6 @@ def levenshtein_edicion(x, y, threshold=None):
         valUp  = D[i-1][j]
         valDiagonal  = D[i-1][j-1]
 
-        # if i - 1 < 0: 
-        #     aux = (x[i -1], "")
-        #     res.append(aux)
-        #     i-= 1
-        #     continue
-
-        # if j - 1 < 0: 
-        #     aux = ("", y[j -1])
-        #     res.append(aux)
-        #     j -= 1
-        #     continue
-
         if valDiagonal <= valUp and valDiagonal <= valLeft and valDiagonal <= valAtual:
             aux = (x[i-1],y[j-1])
             res.append(aux)
@@ -73,7 +61,7 @@ def levenshtein_edicion(x, y, threshold=None):
             res.append(aux)
             i -= 1
         
-        
+    res = list(reversed(res))
     return distancia_leven, res
 
 def levenshtein_reduccion(x, y, threshold=None):
