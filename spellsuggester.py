@@ -90,7 +90,6 @@ class SpellSuggester:
                     resul[i] += 1
                     resul2[i] += pal
 
-
         if flatten:
             resul = [word for wlist in resul for word in wlist]
             
