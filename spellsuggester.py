@@ -74,6 +74,25 @@ class SpellSuggester:
 
         ########################################
         # COMPLETAR
+
+        #La lista i-ésima contiene las palabras a distancia i
+        resul = []     #número de palabras a distancia i
+        resul2 = []    #las palabras que tienen distancia i
+
+        for i in range(0, threshold):
+            resul[i] = 0
+            resul2[i] = []
+
+        for pal in self.vocabulary:
+            dist = self.levenshtein_matriz(term, pal, threshold)
+            for i in range(0, threshold):
+                if dist == i:
+                    resul[i] += 1
+                    resul2[i] += pal
+                
+            
+
+
         ########################################
          #La lista i-ésima contiene las palabras a distancia i
         resul = []     #número de palabras a distancia i
