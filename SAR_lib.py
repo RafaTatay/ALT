@@ -191,7 +191,7 @@ class SAR_Project:
         if self.stemming:
             self.make_stemming()
         #Algoritmica
-        #if self.
+        
         
         
 
