@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import re
-import numpy as np
+#import numpy as np
 
 class SpellSuggester:
 
