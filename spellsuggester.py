@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import re
-#import numpy as np
+import numpy as np
+import distancias
 
 class SpellSuggester:
 
@@ -76,45 +77,21 @@ class SpellSuggester:
         # COMPLETAR
 
         #La lista i-ésima contiene las palabras a distancia i
-        resul = []     #número de palabras a distancia i
-        resul2 = []    #las palabras que tienen distancia i
+        
+        resul = []    #las palabras que tienen distancia i
 
-        for i in range(0, threshold):
-            resul[i] = 0
-            resul2[i] = []
+        for i in range(0, threshold+1):
+            resul.append([])
 
         for pal in self.vocabulary:
-            dist = self.levenshtein_matriz(term, pal, threshold)
-            for i in range(0, threshold):
+            dist = distancias.levenshtein_matriz(term, pal, threshold)
+            for i in range(0, threshold+1):
                 if dist == i:
-                    resul[i] += 1
-                    resul2[i] += pal
-                
+                    resul[i].append(pal)
             
-
-
-        ########################################
-         #La lista i-ésima contiene las palabras a distancia i
-        #resul = []     #número de palabras a distancia i
-        resul2 = []    #las palabras que tienen distancia i
-        #sumaR = 0
-
-        #for i in range(0, threshold):
-            #resul[i] = 0
-            #resul2[i] = []
-
-        for pal in self.vocabulary:
-            #sumaR = 0
-            dist = self.levenshtein_matriz(term, pal, threshold)
-            for i in range(0, threshold):
-                if dist == i:
-                    #resul[i] += 1
-                    #sumaR = sumaR + 1
-                    resul2 += [pal]
-            #resul = resul + " " + sumaR
-
+         
         if flatten:
             resul = [word for wlist in resul for word in wlist]
-            
+          
         return resul
 
