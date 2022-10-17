@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import re
 import numpy as np
+import distancias
 
 class SpellSuggester:
 
@@ -55,7 +56,7 @@ class SpellSuggester:
         if isinstance(vocabulary,list):
             self.vocabulary = vocabulary # atención! nos quedamos una referencia, a tener en cuenta
         elif isinstance(vocabulary,str):
-            self.vocabulary = self.build_vocab(vocabulary)
+            self.vocabulary = self.build_vocabulary(vocabulary)
         else:
             raise Exception("SpellSuggester incorrect vocabulary value")
 
@@ -74,10 +75,23 @@ class SpellSuggester:
 
         ########################################
         # COMPLETAR
-        ########################################
+
+        #La lista i-ésima contiene las palabras a distancia i
+        
+        resul = []    #las palabras que tienen distancia i
+
+        for i in range(0, threshold+1):
+            resul.append([])
+
+        for pal in self.vocabulary:
+            dist = distancias.levenshtein_matriz(term, pal, threshold)
+            for i in range(0, threshold+1):
+                if dist == i:
+                    resul[i].append(pal)
             
+         
         if flatten:
             resul = [word for wlist in resul for word in wlist]
-            
+          
         return resul
 

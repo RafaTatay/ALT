@@ -4,7 +4,11 @@ from nltk.stem.snowball import SnowballStemmer
 import os
 import re
 import numpy as np
-#   Participantes: Kléber Zapata Zambrano, Rafael Estellés Tatay, Noelia Saugar Villar, Mario Díaz Acosta, Naiara Pérez Leizaola.
+
+# ALGORITMICA
+from spellsuggester import SpellSuggester
+
+#Participantes: Kléber Zapata Zambrano, Rafael Estellés Tatay, Noelia Saugar Villar.
 
 class SAR_Project:
     """
@@ -68,6 +72,14 @@ class SAR_Project:
         self.use_ranking = False  # valor por defecto, se cambia con self.set_ranking()
         self.docid = 0
         self.newid = 0
+
+        #Algoritmica
+        self.use_spelling = False
+        self.distance = None
+        self.threshold = None
+
+        self.speller = SpellSuggester()
+        
 
          
 
@@ -178,6 +190,8 @@ class SAR_Project:
         # Activamos funcion stemming
         if self.stemming:
             self.make_stemming()
+        #Algoritmica
+        
         
         
 
@@ -663,7 +677,15 @@ class SAR_Project:
         
             return list(posting.keys())
 
-
+    def set_spelling(self, use_spelling, distance, threshold):
+        """
+        self.use_spelling a True se activa la corrección ortográfica
+        EN LAS PALABRAS NO ENCONTRADAS, en caso contrario NO utilizará
+        corrección ortográfica
+        """
+        self.use_spelling = use_spelling
+        self.distance = distance
+        self.threshold = threshold
 
 
     def get_positionals(self, terms, field='article'):
