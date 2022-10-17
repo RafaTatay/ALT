@@ -19,6 +19,7 @@ def levenshtein_matriz(x, y, threshold=None):
             )
     return D[lenX, lenY]
 
+
 def levenshtein_edicion(x, y, threshold=None):
     # a partir de la versión levenshtein_matriz
     lenX, lenY = len(x), len(y)
@@ -66,11 +67,68 @@ def levenshtein_edicion(x, y, threshold=None):
 
 def levenshtein_reduccion(x, y, threshold=None):
     # completar versión con reducción coste espacial
-    return 0 # COMPLETAR Y REEMPLAZAR ESTA PARTE
+    lenX, lenY = len(x), len(y)
+    '''
+    D = np.zeros((lenX + 1, lenY + 1), dtype=np.int)
+    for i in range(1, lenX + 1):
+        D[i][0] = D[i - 1][0] + 1
+    for j in range(1, lenY + 1):
+        D[0][j] = D[0][j - 1] + 1
+        for i in range(1, lenX + 1):
+            D[i][j] = min(
+                D[i - 1][j] + 1,
+                D[i][j - 1] + 1,
+                D[i - 1][j - 1] + (x[i - 1] != y[j - 1]),
+            )
+    return D[lenX, lenY]
+    '''
+    X = np.zeros(lenX + 1, dtype=np.int)
+    Y = np.zeros(lenX + 1, dtype=np.int)
+    for i in range(1, lenX + 1):
+        X[i] = X[i-1] + 1
+
+    for j in range(1, lenY + 1):
+        Y[0] = j - 1
+        Y[1] = min(
+                j + 1,
+                X[1] + 1,
+                X[0] + (x[1] != y[1]),
+        )
+        for i in range(2, lenX + 1):
+            Y[i] = min(
+                Y[i-1] + 1,
+                X[i] + 1,
+                X[i-1] + (x[i - 1] != y[j - 1]),
+            )
+        X,Y = Y,X
+
+    return X[lenX]
 
 def levenshtein(x, y, threshold):
     # completar versión reducción coste espacial y parada por threshold
-    return min(0,threshold+1) # COMPLETAR Y REEMPLAZAR ESTA PARTE
+    lenX, lenY = len(x), len(y)
+    X = np.zeros(lenX + 1, dtype=np.int)
+    Y = np.zeros(lenX + 1, dtype=np.int)
+    for i in range(1, lenX + 1):
+        X[i] = X[i-1] + 1
+
+    for j in range(1, lenY + 1):
+        Y[0] = j - 1
+        Y[1] = min(
+                j + 1,
+                X[1] + 1,
+                X[0] + (x[1] != y[1]),
+        )
+        for i in range(2, lenX + 1):
+            Y[i] = min(
+                Y[i-1] + 1,
+                X[i] + 1,
+                X[i-1] + (x[i - 1] != y[j - 1]),
+            )
+        if np.min(Y) > threshold:
+            return threshold+1
+        X,Y = Y,X
+    return min(X[lenX],threshold+1) # COMPLETAR Y REEMPLAZAR ESTA PARTE
 
 def levenshtein_cota_optimista(x, y, threshold): #AMPLIACIÓN
     return 0 # COMPLETAR Y REEMPLAZAR ESTA PARTE
