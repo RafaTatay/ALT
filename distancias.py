@@ -175,7 +175,7 @@ def damerau_restricted_edicion(x, y, threshold=None):
     # secuencia de operaciones de edición
     return 0,[] # COMPLETAR Y REEMPLAZAR ESTA PARTE
 
-def damerau_restricted(x, y, threshold=None):
+def damerau_restricted(x, y, threshold):
     # versión con reducción coste espacial y parada por threshold
     lenX, lenY = len(x), len(y)
     X = np.zeros(lenX + 1, dtype=np.int)
@@ -189,17 +189,20 @@ def damerau_restricted(x, y, threshold=None):
         Y[1] = min(
                 j + 1,
                 X[1] + 1,
-                X[0] + (x[1] != y[1]),
+                X[0] + (x[1] != y[1])
         )
         for i in range(2, lenX + 1):
             Y[i] = min(
                 Y[i-1] + 1,
                 X[i] + 1,
-                X[i-1] + (x[i - 1] != y[j - 1]),
+                X[i-1] + (x[i - 1] != y[j - 1])
             )
+            if((x[i - 1] == y[j - 2]) and (x[i - 2] == y[j - 1]) and i > 1 and j > 1):
+                Y[i] = min(Y[i], Z[i - 2] + 1)
         if np.min(Y) > threshold:
             return threshold+1
         X,Y = Y,X
+        Z,Y = Y,Z
     return min(X[lenX],threshold+1) # COMPLETAR Y REEMPLAZAR ESTA PARTE
 
 def damerau_intermediate_matriz(x, y, threshold=None):
