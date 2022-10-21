@@ -4,6 +4,7 @@ from nltk.stem.snowball import SnowballStemmer
 import os
 import re
 import numpy as np
+import distancias
 
 # ALGORITMICA
 from spellsuggester import SpellSuggester
@@ -81,6 +82,7 @@ class SAR_Project:
         self.threshold = None
 
         self.speller = SpellSuggester()
+        
         
 
    
@@ -202,8 +204,9 @@ class SAR_Project:
         # Activamos funcion stemming
         if self.stemming:
             self.make_stemming()
-            
-        self.speller.set_vocabulary(self.docs.keys())
+        
+        #ALGORÍTMICA   
+        self.speller.set_vocabulary(list(self.index['article'].keys()))
         
         
         
@@ -677,6 +680,7 @@ class SAR_Project:
         ## COMPLETAR PARA TODAS LAS VERSIONES ##
         ########################################
         posting = []
+        lista = []
         if self.stemming and not wildcard:
             posting = self.get_stemming(term,field)
            # print(posting)
@@ -684,28 +688,32 @@ class SAR_Project:
             posting = self.get_permuterm(term,field)
             return posting
        #FALTA EL DE POSICIONALES 
-        else:
-            posting = self.index[field].get(term, []) #implementación para la entrega obligatoria 
-            lista = [] 
-            aux = []  #para guardar las palabras sugeridas
-            if posting == []:   #ALGORITMICA  
-                aux = self.speller.suggest(term, self.distance, self.threshold, flatten=True)
-                if aux == []: return []
-                else: 
-                    for a in aux:
-                        posting = self.index[field].get(a, [])
-                        if posting ==[]:  return []
-                        else:
-                            for key, value in posting.items():
-                                entry = (key, value)
-                                lista.append(entry)
-                        
-            else :
-                for key, value in posting.items():
+        if term in self.index[field]:
+            posting = self.index[field].get(term, []) #implementación para la entrega obligatoria
+            for key, value in posting.items():
                     entry = (key, value)
                     lista.append(entry)
+            return lista
+        #ALGORITMICA
+        elif self.use_spelling:
+            aux = []  #para guardar las palabras sugeridas
+            aux = self.speller.suggest(term, self.distance, self.threshold, flatten=True)
+            if aux == []: return []
+            else: 
+                res = ""   #para agrupar la consulta OR
+                count = 0
+                for a in aux:
+                    count = count + 1  #evitar un OR extra
+                    if len(aux) < count:
+                        res += a + " OR "
+                    else:
+                        res += a
+        else:
+            return []
+                        
+            
         
-            return list(posting.keys())
+        return list(posting.keys())
 
     def set_spelling(self, use_spelling, distance, threshold):
         """
