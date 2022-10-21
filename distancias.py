@@ -145,16 +145,17 @@ def levenshtein_cota_optimista(x, y, threshold): #AMPLIACIÓN
             res[-1] += abs(dif)
         else: res[1] += dif
 
-    max = max(abs(res[0]), abs(res[1]))
+    maximum = max(res[-1], res[1])
 
-    if max >= threshold: return threshold +1
-    
+    if maximum >= threshold: return threshold +1
+
     return levenshtein(x,y,threshold)
 
 def damerau_restricted_matriz(x, y, threshold=None): #AMPLIACIÓN
     # completar versión Damerau-Levenstein restringida con matriz
     lenX, lenY = len(x), len(y)
     # COMPLETAR
+    return 0 #Eliminar cuando s eimpelmente
     return D[lenX, lenY]
 
 def damerau_restricted_edicion(x, y, threshold=None):
@@ -168,6 +169,7 @@ def damerau_restricted(x, y, threshold=None):
 
 def damerau_intermediate_matriz(x, y, threshold=None):
     # completar versión Damerau-Levenstein intermedia con matriz
+    return 0 #Eliminar cuando s eimpelmente
     return D[lenX, lenY]
 
 def damerau_intermediate_edicion(x, y, threshold=None):
