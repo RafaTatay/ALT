@@ -32,16 +32,7 @@ class SAR_Project:
     # numero maximo de documento a mostrar cuando self.show_all es False
     SHOW_MAX = 10
     
-     #Búsqueda con tolerancia
-    def set_spelling(self, use_spelling, distance, threshold): 
-        """ 
-        self.use_spelling a True se activa la corrección ortográfica
-        EN LAS PALABRAS NO ENCONTRADAS, en caso contrario NO utilizará
-        correción ortográfica  
-        """
-        self.use_spelling = use_spelling
-        self.distance = distance
-        self.threshold = threshold
+    
 
 
     def __init__(self):
@@ -102,6 +93,16 @@ class SAR_Project:
     ###############################
         self.doc_cont = 0
         self.new_cont = 0
+     #Búsqueda con tolerancia
+    def set_spelling(self, use_spelling, distance, threshold): 
+        """ 
+        self.use_spelling a True se activa la corrección ortográfica
+        EN LAS PALABRAS NO ENCONTRADAS, en caso contrario NO utilizará
+        correción ortográfica  
+        """
+        self.use_spelling = use_spelling
+        self.distance = distance
+        self.threshold = threshold
     def set_showall(self, v):
         """
 
@@ -201,6 +202,8 @@ class SAR_Project:
         # Activamos funcion stemming
         if self.stemming:
             self.make_stemming()
+            
+        self.speller.set_vocabulary(self.docs.keys())
         
         
         
@@ -288,8 +291,9 @@ class SAR_Project:
                 posicion_not = posicion_not + 1 #la posicion crece en uno ya que vamos a pasar a la siguiente noticia
                 self.newid = self.newid + 1 #newid tambien suma uno porque pasa a la siguiente noticia
             self.docid = self.docid + 1
-        #Algoritmica
-        self.speller.set_vocabulary()
+        
+        
+        
             
         
 
@@ -684,17 +688,22 @@ class SAR_Project:
             posting = self.index[field].get(term, []) #implementación para la entrega obligatoria 
             lista = [] 
             aux = []  #para guardar las palabras sugeridas
-            if posting ==[]:   #ALGORITMICA  
+            if posting == []:   #ALGORITMICA  
                 aux = self.speller.suggest(term, self.distance, self.threshold, flatten=True)
                 if aux == []: return []
                 else: 
                     for a in aux:
                         posting = self.index[field].get(a, [])
                         if posting ==[]:  return []
+                        else:
+                            for key, value in posting.items():
+                                entry = (key, value)
+                                lista.append(entry)
                         
-            for key, value in posting.items():
-                entry = (key, value)
-                lista.append(entry)
+            else :
+                for key, value in posting.items():
+                    entry = (key, value)
+                    lista.append(entry)
         
             return list(posting.keys())
 
