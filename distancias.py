@@ -154,8 +154,20 @@ def levenshtein_cota_optimista(x, y, threshold): #AMPLIACIÓN
 def damerau_restricted_matriz(x, y, threshold=None): #AMPLIACIÓN
     # completar versión Damerau-Levenstein restringida con matriz
     lenX, lenY = len(x), len(y)
-    # COMPLETAR
-    return 0 #Eliminar cuando s eimpelmente
+    
+    D = np.zeros((lenX + 1, lenY + 1), dtype=np.int)
+    for i in range(1, lenX + 1):
+        D[i][0] = D[i - 1][0] + 1
+    for j in range(1, lenY + 1):
+        D[0][j] = D[0][j - 1] + 1
+        for i in range(1, lenX + 1):
+            D[i][j] = min(
+                D[i - 1][j] + 1,
+                D[i][j - 1] + 1,
+                D[i - 1][j - 1] + (x[i - 1] != y[j - 1]),
+            )
+            if((x[i - 1] == y[j - 2]) and (x[i - 2] == y[j - 1]) and i > 1 and j > 1):
+                D[i][j] = min(D[i][j], D[i - 2][j - 2] + 1)
     return D[lenX, lenY]
 
 def damerau_restricted_edicion(x, y, threshold=None):
@@ -165,7 +177,30 @@ def damerau_restricted_edicion(x, y, threshold=None):
 
 def damerau_restricted(x, y, threshold=None):
     # versión con reducción coste espacial y parada por threshold
-     return min(0,threshold+1) # COMPLETAR Y REEMPLAZAR ESTA PARTE
+    lenX, lenY = len(x), len(y)
+    X = np.zeros(lenX + 1, dtype=np.int)
+    Y = np.zeros(lenX + 1, dtype=np.int)
+    Z = np.zeros(lenX + 1, dtype=np.int)
+    for i in range(1, lenX + 1):
+        X[i] = X[i-1] + 1
+
+    for j in range(1, lenY + 1):
+        Y[0] = j - 1
+        Y[1] = min(
+                j + 1,
+                X[1] + 1,
+                X[0] + (x[1] != y[1]),
+        )
+        for i in range(2, lenX + 1):
+            Y[i] = min(
+                Y[i-1] + 1,
+                X[i] + 1,
+                X[i-1] + (x[i - 1] != y[j - 1]),
+            )
+        if np.min(Y) > threshold:
+            return threshold+1
+        X,Y = Y,X
+    return min(X[lenX],threshold+1) # COMPLETAR Y REEMPLAZAR ESTA PARTE
 
 def damerau_intermediate_matriz(x, y, threshold=None):
     # completar versión Damerau-Levenstein intermedia con matriz
