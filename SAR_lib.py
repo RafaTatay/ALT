@@ -4,7 +4,7 @@ from nltk.stem.snowball import SnowballStemmer
 import os
 import re
 import numpy as np
-import distancias
+#import distancias
 
 # ALGORITMICA
 from spellsuggester import SpellSuggester
@@ -708,12 +708,13 @@ class SAR_Project:
                         res += a + " OR "
                     else:
                         res += a
+                return self.solve_query(res)
         else:
             return []
+       # return list(posting.keys())
                         
             
         
-        return list(posting.keys())
 
     def set_spelling(self, use_spelling, distance, threshold):
         """
