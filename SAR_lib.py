@@ -8,6 +8,7 @@ import numpy as np
 
 # ALGORITMICA
 from spellsuggester import SpellSuggester
+from distancias import *
 
 #Participantes: Kléber Zapata Zambrano, Rafael Estellés Tatay, Noelia Saugar Villar.
 
@@ -81,7 +82,7 @@ class SAR_Project:
         self.distance = None
         self.threshold = None
 
-        self.speller = SpellSuggester()
+        self.speller = SpellSuggester(dist_functions = opcionesSpell)
         
         
 
@@ -693,7 +694,7 @@ class SAR_Project:
             for key, value in posting.items():
                     entry = (key, value)
                     lista.append(entry)
-            return lista
+            return list(posting.keys())
         #ALGORITMICA
         elif self.use_spelling:
             aux = []  #para guardar las palabras sugeridas
@@ -701,13 +702,13 @@ class SAR_Project:
             if aux == []: return []
             else: 
                 res = ""   #para agrupar la consulta OR
-                count = 0
+                count = 1
                 for a in aux:
-                    count = count + 1  #evitar un OR extra
                     if len(aux) < count:
                         res += a + " OR "
                     else:
                         res += a
+                    count = count + 1  #evitar un OR extra
                 return self.solve_query(res)
         else:
             return []

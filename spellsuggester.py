@@ -80,14 +80,14 @@ class SpellSuggester:
         
         resul = []    #las palabras que tienen distancia i
 
-        for i in range(0, threshold+1):
+        for i in range(1, threshold+1):
             resul.append([])
 
         for pal in self.vocabulary:
             dist = distancias.levenshtein_matriz(term, pal, threshold)
-            for i in range(0, threshold+1):
+            for i in range(1, threshold+1):
                 if dist == i:
-                    resul[i].append(pal)
+                    resul[i-1].append(pal)
             
          
         if flatten:
