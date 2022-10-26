@@ -80,7 +80,7 @@ class SpellSuggester:
     
 
         for pal in self.vocabulary:
-            dist = distancias.levenshtein(term, pal, threshold)
+            dist = distancias.opcionesSpell[distance](term, pal, threshold)
             #if not pal.isdigit():
             for i in range(0, threshold+1):
                  if dist == i:
