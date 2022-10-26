@@ -88,13 +88,8 @@ def levenshtein_reduccion(x, y, threshold=None):
         X[i] = X[i-1] + 1
 
     for j in range(1, lenY + 1):
-        Y[0] = j - 1
-        Y[1] = min(
-                j + 1,
-                X[1] + 1,
-                X[0] + (x[1] != y[1]),
-        )
-        for i in range(2, lenX + 1):
+        Y[0] = j
+        for i in range(1, lenX + 1):
             Y[i] = min(
                 Y[i-1] + 1,
                 X[i] + 1,
@@ -113,13 +108,8 @@ def levenshtein(x, y, threshold):
         X[i] = X[i-1] + 1
 
     for j in range(1, lenY + 1):
-        Y[0] = j - 1
-        Y[1] = min(
-                j + 1,
-                X[1] + 1,
-                X[0] + (x[1] != y[1]),
-        )
-        for i in range(2, lenX + 1):
+        Y[0] = j
+        for i in range(1, lenX + 1):
             Y[i] = min(
                 Y[i-1] + 1,
                 X[i] + 1,
@@ -185,13 +175,12 @@ def damerau_restricted(x, y, threshold):
         X[i] = X[i-1] + 1
 
     for j in range(1, lenY + 1):
-        Y[0] = j - 1
+        Y[0] = j 
         Y[1] = min(
                 j + 1,
-                X[1] + 1,
-                X[0] + (x[1] != y[1])
+                X[1] + 1
         )
-        for i in range(2, lenX + 1):
+        for i in range(1, lenX + 1):
             Y[i] = min(
                 Y[i-1] + 1,
                 X[i] + 1,
@@ -245,13 +234,12 @@ def damerau_intermediate(x, y, threshold=None):
         X[i] = X[i-1] + 1
 
     for j in range(1, lenY + 1):
-        Y[0] = j - 1
+        Y[0] = j
         Y[1] = min(
                 j + 1,
-                X[1] + 1,
-                X[0] + (x[1] != y[1])
-        )
-        for i in range(2, lenX + 1):
+                X[1] + 1
+        ) 
+        for i in range(1, lenX + 1):
             Y[i] = min(
                 Y[i-1] + 1,
                 X[i] + 1,

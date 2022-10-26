@@ -16,15 +16,12 @@ class SpellSuggester:
                  default_threshold = None):
         
         """Método constructor de la clase SpellSuggester
-
         Construye una lista de términos únicos (vocabulario),
-
         Args:
            dist_functions es un diccionario nombre->funcion_distancia
            vocab es una lista de palabras o la ruta de un fichero
            default_distance debe ser una clave de dist_functions
            default_threshold un entero positivo
-
         """
         self.distance_functions = dist_functions
         self.set_vocabulary(vocab)
@@ -37,11 +34,9 @@ class SpellSuggester:
 
     def build_vocabulary(self, vocab_file_path):
         """Método auxiliar para crear el vocabulario.
-
         Se tokeniza por palabras el fichero de texto,
         se eliminan palabras duplicadas y se ordena
         lexicográficamente.
-
         Args:
             vocab_file (str): ruta del fichero de texto para cargar el vocabulario.
             tokenizer (re.Pattern): expresión regular para la tokenización.
@@ -62,7 +57,6 @@ class SpellSuggester:
 
     def suggest(self, term, distance=None, threshold=None, flatten=True):
         """
-
         Args:
             term (str): término de búsqueda.
             distance (str): nombre del algoritmo de búsqueda a utilizar
@@ -82,11 +76,14 @@ class SpellSuggester:
 
         for i in range(0, threshold+1):
             resul.append([])
+            
+    
 
         for pal in self.vocabulary:
-            dist = distancias.levenshtein_matriz(term, pal, threshold)
+            dist = distancias.levenshtein(term, pal, threshold)
+            #if not pal.isdigit():
             for i in range(0, threshold+1):
-                if dist == i:
+                 if dist == i:
                     resul[i].append(pal)
             
          
@@ -94,4 +91,3 @@ class SpellSuggester:
             resul = [word for wlist in resul for word in wlist]
           
         return resul
-
