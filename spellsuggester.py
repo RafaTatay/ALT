@@ -3,6 +3,7 @@ import re
 import numpy as np
 import distancias
 
+
 class SpellSuggester:
 
     """
@@ -79,7 +80,7 @@ class SpellSuggester:
 
         #La lista i-ésima contiene las palabras a distancia i
         
-    
+        
         
         resul = []    #las palabras que tienen distancia i
 
@@ -98,6 +99,7 @@ class SpellSuggester:
          
         if flatten:
             resul = [word for wlist in resul for word in wlist]
+        
           
         return resul
 
