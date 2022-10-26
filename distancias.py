@@ -1,7 +1,6 @@
 from audioop import reverse
 import numpy as np
 
-
 def levenshtein_matriz(x, y, threshold=None):
     # esta versión no utiliza threshold, se pone porque se puede
     # invocar con él, en cuyo caso se ignora
@@ -89,13 +88,8 @@ def levenshtein_reduccion(x, y, threshold=None):
         X[i] = X[i-1] + 1
 
     for j in range(1, lenY + 1):
-        Y[0] = j - 1
-        Y[1] = min(
-                j + 1,
-                X[1] + 1,
-                X[0] + (x[1] != y[1]),
-        )
-        for i in range(2, lenX + 1):
+        Y[0] = j
+        for i in range(1, lenX + 1):
             Y[i] = min(
                 Y[i-1] + 1,
                 X[i] + 1,
@@ -110,17 +104,12 @@ def levenshtein(x, y, threshold):
     lenX, lenY = len(x), len(y)
     X = np.zeros(lenX + 1, dtype=np.int)
     Y = np.zeros(lenX + 1, dtype=np.int)
-    
     for i in range(1, lenX + 1):
         X[i] = X[i-1] + 1
+
     for j in range(1, lenY + 1):
-        Y[0] = j - 1
-        Y[1] = min(
-                j + 1,
-                X[1] + 1,
-                X[0] + (x[1] != y[1]),
-        )
-        for i in range(2, lenX + 1):
+        Y[0] = j
+        for i in range(1, lenX + 1):
             Y[i] = min(
                 Y[i-1] + 1,
                 X[i] + 1,
@@ -176,7 +165,7 @@ def damerau_restricted_edicion(x, y, threshold=None):
     # secuencia de operaciones de edición
     return 0,[] # COMPLETAR Y REEMPLAZAR ESTA PARTE
 
-def damerau_restricted(x, y, threshold=None):
+def damerau_restricted(x, y, threshold):
     # versión con reducción coste espacial y parada por threshold
     lenX, lenY = len(x), len(y)
     X = np.zeros(lenX + 1, dtype=np.int)
@@ -186,13 +175,12 @@ def damerau_restricted(x, y, threshold=None):
         X[i] = X[i-1] + 1
 
     for j in range(1, lenY + 1):
-        Y[0] = j - 1
+        Y[0] = j 
         Y[1] = min(
                 j + 1,
-                X[1] + 1,
-                X[0] + (x[1] != y[1])
+                X[1] + 1
         )
-        for i in range(2, lenX + 1):
+        for i in range(1, lenX + 1):
             Y[i] = min(
                 Y[i-1] + 1,
                 X[i] + 1,
@@ -246,13 +234,12 @@ def damerau_intermediate(x, y, threshold=None):
         X[i] = X[i-1] + 1
 
     for j in range(1, lenY + 1):
-        Y[0] = j - 1
+        Y[0] = j
         Y[1] = min(
                 j + 1,
-                X[1] + 1,
-                X[0] + (x[1] != y[1])
-        )
-        for i in range(2, lenX + 1):
+                X[1] + 1
+        ) 
+        for i in range(1, lenX + 1):
             Y[i] = min(
                 Y[i-1] + 1,
                 X[i] + 1,
@@ -281,6 +268,7 @@ opcionesSpell = {
     'damerau_im':    damerau_intermediate_matriz,
     'damerau_i':     damerau_intermediate
 }
+
 
 opcionesEdicion = {
     'levenshtein': levenshtein_edicion,

@@ -68,6 +68,7 @@ class SpellSuggester:
             distance (str): nombre del algoritmo de búsqueda a utilizar
             threshold (int): threshold para limitar la búsqueda
         """
+        
         if distance is None:
             distance = self.default_distance
         if threshold is None:
@@ -78,6 +79,8 @@ class SpellSuggester:
 
         #La lista i-ésima contiene las palabras a distancia i
         
+    
+        
         resul = []    #las palabras que tienen distancia i
 
         for i in range(0, threshold+1):
@@ -86,7 +89,7 @@ class SpellSuggester:
     
 
         for pal in self.vocabulary:
-            dist = distancias.levenshtein(term, pal, threshold)
+            dist = distancias.opcionesSpell[distance](term, pal, threshold)
             #if not pal.isdigit():
             for i in range(0, threshold+1):
                  if dist == i:
