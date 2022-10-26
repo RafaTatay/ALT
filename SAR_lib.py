@@ -705,7 +705,7 @@ class SAR_Project:
                 count = 1
                 for a in aux:
                     if len(aux) < count:
-                        res += a + " OR "
+                        res += a +  " OR "
                     else:
                         res += a
                     count = count + 1  #evitar un OR extra
