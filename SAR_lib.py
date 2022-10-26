@@ -681,7 +681,7 @@ class SAR_Project:
         ## COMPLETAR PARA TODAS LAS VERSIONES ##
         ########################################
         posting = []
-        lista = []
+        #lista = []
         if self.stemming and not wildcard:
             posting = self.get_stemming(term,field)
            # print(posting)
@@ -689,29 +689,33 @@ class SAR_Project:
             posting = self.get_permuterm(term,field)
             return posting
        #FALTA EL DE POSICIONALES 
-        if term in self.index[field]:
-            posting = self.index[field].get(term, []) #implementación para la entrega obligatoria
-            for key, value in posting.items():
-                    entry = (key, value)
-                    lista.append(entry)
-            return list(posting.keys())
-        #ALGORITMICA
-        elif self.use_spelling:
-            aux = []  #para guardar las palabras sugeridas
-            aux = self.speller.suggest(term, self.distance, self.threshold, flatten=True)
-            if aux == []: return []
-            else: 
-                res = ""   #para agrupar la consulta OR
-                count = 1
-                for a in aux:
-                    if len(aux) < count:
-                        res += a +  " OR "
-                    else:
-                        res += a
-                    count = count + 1  #evitar un OR extra
-                return self.solve_query(res)
         else:
-            return []
+            if term in self.index[field]:
+                posting = self.index[field].get(term, []) #implementación para la entrega obligatoria
+                #for key, value in posting.items():
+                        #entry = (key, value)
+                        #lista.append(entry)
+                return list(posting.keys())
+        #ALGORITMICA
+        if self.use_spelling and posting == []:
+            #aux = []  #para guardar las palabras sugeridas
+            aux = self.speller.suggest(term, self.distance, self.threshold, flatten=True)
+            #if aux == []: return []
+           # else: 
+               # res = ""   #para agrupar la consulta OR
+                #count = 1
+                #for a in aux:
+                   # if len(aux) < count:
+                        #res += a +  " OR "
+                    #else:
+                        #res += a
+                    #count = count + 1  #evitar un OR extra
+                #return self.solve_query(res)
+            for a in aux:
+                posting = self.or_posting(posting, self.get_posting(a))
+        #else:
+           # return []
+        return posting
        # return list(posting.keys())
                         
             

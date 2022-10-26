@@ -137,7 +137,7 @@ def levenshtein_cota_optimista(x, y, threshold): #AMPLIACIÓN
 
     maximum = max(res[-1], res[1])
 
-    if maximum >= threshold: return threshold +1
+    if maximum > threshold: return threshold +1
 
     return levenshtein(x,y,threshold)
 
