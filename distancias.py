@@ -137,7 +137,7 @@ def levenshtein_cota_optimista(x, y, threshold): #AMPLIACIÓN
 
     maximum = max(res[-1], res[1])
 
-    if maximum >= threshold: return threshold +1
+    if maximum > threshold: return threshold +1
 
     return levenshtein(x,y,threshold)
 
@@ -163,7 +163,68 @@ def damerau_restricted_matriz(x, y, threshold=None): #AMPLIACIÓN
 def damerau_restricted_edicion(x, y, threshold=None):
     # partiendo de damerau_restricted_matriz añadir recuperar
     # secuencia de operaciones de edición
-    return 0,[] # COMPLETAR Y REEMPLAZAR ESTA PARTE
+    lenX, lenY = len(x), len(y)
+    
+    D = np.zeros((lenX + 1, lenY + 1), dtype=np.int)
+    for i in range(1, lenX + 1):
+        D[i][0] = D[i - 1][0] + 1
+    for j in range(1, lenY + 1):
+        D[0][j] = D[0][j - 1] + 1
+        for i in range(1, lenX + 1):
+            D[i][j] = min(
+                D[i - 1][j] + 1,
+                D[i][j - 1] + 1,
+                D[i - 1][j - 1] + (x[i - 1] != y[j - 1]),
+            )
+            if((x[i - 1] == y[j - 2]) and (x[i - 2] == y[j - 1]) and i > 0 and j > 0):
+                D[i][j] = min(D[i][j], D[i - 2][j - 2] + 1)
+
+    distancia_damerau_restricted = D[lenX, lenY]
+
+    i = lenX
+    j = lenY
+    res = []
+
+    while i != 0 or j != 0:
+        #Posiciones alrededor
+        valAtual = D[i][j]
+        valLeft  = D[i][j-1]        
+        valUp  = D[i-1][j]
+        valDiagonal  = D[i-1][j-1]
+
+        if i >= 2 and j >= 2:
+            x1 =  x[i-2]
+            x2 =  x[i-1]
+            y1 =  y[j-2]
+            y2 =  y[j-1]
+            if x1 == y2 and y1 == x2:
+                aux = (x1 + x2, y1 + y2)
+                print(x1+x2)
+                res.append(aux)
+                i -= 2
+                j -= 2
+                continue   
+        
+        if valDiagonal <= valUp  and valDiagonal <= valLeft and valDiagonal <= valAtual :
+            aux = (x[i-1],y[j-1])
+            res.append(aux)
+            i -= 1
+            j -= 1
+        elif valLeft <= valDiagonal and valLeft == valAtual - 1:
+            aux = ("", y[j-1])
+            res.append(aux)
+            j -= 1
+        elif valUp <= valDiagonal and valUp == valAtual - 1:
+            aux = (x[i-1], "")
+            res.append(aux)
+            i -= 1
+        # else:
+        #     aux = (x[i-2]+x[i-1], y[i-2]+y[i-1])
+        #     res.append(aux)
+        #     i -= 2
+        #     j -= 2
+    res = list(reversed(res))
+    return distancia_damerau_restricted, res
 
 def damerau_restricted(x, y, threshold):
     # versión con reducción coste espacial y parada por threshold

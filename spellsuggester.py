@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import re
+from unittest import result
 import numpy as np
 import distancias
 
@@ -92,7 +93,7 @@ class SpellSuggester:
             dist = distancias.opcionesSpell[distance](term, pal, threshold)
             #if not pal.isdigit():
             for i in range(0, threshold+1):
-                 if dist == i:
+                if dist == i:
                     resul[i].append(pal)
             
          
