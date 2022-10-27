@@ -185,7 +185,7 @@ def damerau_restricted(x, y, threshold):
                 X[i] + 1,
                 X[i-1] + (x[i - 1] != y[j - 1])
             )
-            if((x[i - 1] == y[j - 2]) and (x[i - 2] == y[j - 1]) and i > 1 and j > 1):
+            if(i > 1 and j > 1 and (x[i - 1] == y[j - 2]) and (x[i - 2] == y[j - 1])):
                 Y[i] = min(Y[i], Z[i - 2] + 1)
         if np.min(Y) > threshold:
             return threshold+1
@@ -224,11 +224,11 @@ def damerau_intermediate_matriz(x, y, threshold=None):
                 D[i][j - 1] + 1,
                 D[i - 1][j - 1] + (x[i - 1] != y[j - 1])
             )
-            if((x[i - 1] == y[j - 2]) and (x[i - 2] == y[j - 1]) and i > 1 and j > 1):
+            if(i > 1 and j > 1 and (x[i - 1] == y[j - 2]) and (x[i - 2] == y[j - 1])):
                 D[i][j] = min(D[i][j], D[i - 2][j - 2] + 1)
-            if((x[i - 3] == y[j - 1]) and (x[i - 1] == y[j - 2]) and i > 2 and j > 1):
+            if(i > 2 and j > 1 and (x[i - 3] == y[j - 1]) and (x[i - 1] == y[j - 2])):
                 D[i][j] = min(D[i][j], D[i - 3][j - 2] + 2)
-            if((x[i - 2] == y[j - 1]) and (x[i - 2] == y[j - 1]) and i > 1 and j > 2):
+            if(i > 1 and j > 2 and (x[i - 2] == y[j - 1]) and (x[i - 1] == y[j - 3])):
                 D[i][j] = min(D[i][j], D[i -2][j - 3] + 2)
     return D[lenX, lenY]
 
@@ -262,9 +262,9 @@ def damerau_intermediate(x, y, threshold=None):
             )
             if((x[i - 1] == y[j - 2]) and (x[i - 2] == y[j - 1]) and i > 1 and j > 1):
                 Y[i] = min(Y[i], Z[i - 2] + 1)
-            if((x[i - 3] == y[j - 1]) and (x[i - 1] == y[j - 2]) and i > 2 and j > 1):
+            if(i > 2 and j > 1 and (x[i - 3] == y[j - 1]) and (x[i - 1] == y[j - 2])):
                 Y[i] = min(Y[i], Z[i - 3] + 2)
-            if((x[i - 2] == y[j - 1]) and (x[i - 2] == y[j - 1]) and i > 1 and j > 2):
+            if(i > 1 and j > 2 and (x[i - 2] == y[j - 1]) and (x[i - 1] == y[j - 3])):
                 Y[i] = min(Y[i], Z_2[i - 2] + 2)
         if np.min(Y) > threshold:
             return threshold+1
