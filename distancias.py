@@ -199,7 +199,6 @@ def damerau_restricted_edicion(x, y, threshold=None):
             y2 =  y[j-1]
             if x1 == y2 and y1 == x2:
                 aux = (x1 + x2, y1 + y2)
-                print(x1+x2)
                 res.append(aux)
                 i -= 2
                 j -= 2
@@ -282,6 +281,98 @@ def damerau_intermediate_edicion(x, y, threshold=None):
     # partiendo de matrix_intermediate_damerau añadir recuperar
     # secuencia de operaciones de edición
     # completar versión Damerau-Levenstein intermedia con matriz
+    lenX, lenY = len(x), len(y)
+    
+    D = np.zeros((lenX + 1, lenY + 1), dtype=np.int)
+    for i in range(1, lenX + 1):
+        D[i][0] = D[i - 1][0] + 1
+    for j in range(1, lenY + 1):
+        D[0][j] = D[0][j - 1] + 1
+        for i in range(1, lenX + 1):
+            D[i][j] = min(
+                D[i - 1][j] + 1,
+                D[i][j - 1] + 1,
+                D[i - 1][j - 1] + (x[i - 1] != y[j - 1]),
+            )
+            if((x[i - 1] == y[j - 2]) and (x[i - 2] == y[j - 1]) and i > 1 and j > 1):
+                D[i][j] = min(D[i][j], D[i - 2][j - 2] + 1)
+            if((x[i - 3] == y[j - 1]) and (x[i - 1] == y[j - 2]) and i > 2 and j > 1):
+                D[i][j] = min(D[i][j], D[i - 3][j - 2] + 2)
+            if((x[i - 2] == y[j - 1]) and (x[i - 2] == y[j - 1]) and i > 1 and j > 2):
+                D[i][j] = min(D[i][j], D[i -2][j - 3] + 2)
+    distancia_damerau_inter = D[lenX, lenY]
+
+    i = lenX
+    j = lenY
+    res = []
+
+    while i != 0 or j != 0:
+        #Posiciones alrededor
+        valAtual = D[i][j]
+        valLeft  = D[i][j-1]        
+        valUp  = D[i-1][j]
+        valDiagonal  = D[i-1][j-1]
+
+
+        if i >= 2 and j >= 2:
+            x1 =  x[i-2]
+            x2 =  x[i-1]
+            y1 =  y[j-2]
+            y2 =  y[j-1]
+            if x1 == y2 and y1 == x2:
+                aux = (x1 + x2, y1 + y2)
+                res.append(aux)
+                i -= 2
+                j -= 2
+                continue   
+
+        if i >=3 and j>=2 and (valDiagonal != valAtual or valLeft != valAtual or valUp != valAtual): 
+            x1 =  x[i-3]
+            x2 =  x[i-2]
+            x3 =  x[i-1]
+            y1 =  y[j-2]
+            y2 =  y[j-1]
+            if y1+y2 in x1+x2+x3  and x1+x2 != y1+y2 and x2+x3 != y1+y2:
+                aux = (x1+x2+x3, y1+y2)
+                res.append(aux)
+                i-=3
+                j-=2
+                continue
+        if  i >= 2 and j >= 3 and (valDiagonal != valAtual or valLeft != valAtual or valUp != valAtual) :
+            x1 =  x[i-2]
+            x2 =  x[i-1]
+            y1 =  y[j-3]
+            y2 =  y[j-2]
+            y3 =  y[j-1]
+            if x1+x2 in y1+y2+y3  and x1+x2 != y1+y2 and x1+x2 != y2+y3:
+                aux = (x1+x2, y1+y2+y3)
+                res.append(aux)
+                i-=2
+                j-=3
+                continue
+            
+
+        if valDiagonal <= valUp  and valDiagonal <= valLeft and valDiagonal <= valAtual :
+            aux = (x[i-1],y[j-1])
+            res.append(aux)
+            i -= 1
+            j -= 1
+        elif valLeft <= valDiagonal and valLeft == valAtual - 1:
+            aux = ("", y[j-1])
+            res.append(aux)
+            j -= 1
+        elif valUp <= valDiagonal and valUp == valAtual - 1:
+            aux = (x[i-1], "")
+            res.append(aux)
+            i -= 1
+        # else:
+        #     aux = (x[i-2]+x[i-1], y[i-2]+y[i-1])
+        #     res.append(aux)
+        #     i -= 2
+        #     j -= 2
+    res = list(reversed(res))
+    return distancia_damerau_inter, res
+
     return 0,[] # COMPLETAR Y REEMPLAZAR ESTA PARTE
     
 def damerau_intermediate(x, y, threshold=None):
