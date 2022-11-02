@@ -256,6 +256,7 @@ def damerau_restricted(x, y, threshold):
 
 def damerau_intermediate_matriz(x, y, threshold=None):
     # completar versión Damerau-Levenstein intermedia con matriz
+
     lenX, lenY = len(x), len(y)
     
     D = np.zeros((lenX + 1, lenY + 1), dtype=np.int)
@@ -267,13 +268,13 @@ def damerau_intermediate_matriz(x, y, threshold=None):
             D[i][j] = min(
                 D[i - 1][j] + 1,
                 D[i][j - 1] + 1,
-                D[i - 1][j - 1] + (x[i - 1] != y[j - 1]),
+                D[i - 1][j - 1] + (x[i - 1] != y[j - 1])
             )
-            if((x[i - 1] == y[j - 2]) and (x[i - 2] == y[j - 1]) and i > 1 and j > 1):
+            if(i > 1 and j > 1 and (x[i - 1] == y[j - 2]) and (x[i - 2] == y[j - 1])):
                 D[i][j] = min(D[i][j], D[i - 2][j - 2] + 1)
-            if((x[i - 3] == y[j - 1]) and (x[i - 1] == y[j - 2]) and i > 2 and j > 1):
+            if(i > 2 and j > 1 and (x[i - 3] == y[j - 1]) and (x[i - 1] == y[j - 2])):
                 D[i][j] = min(D[i][j], D[i - 3][j - 2] + 2)
-            if((x[i - 2] == y[j - 1]) and (x[i - 2] == y[j - 1]) and i > 1 and j > 2):
+            if(i > 1 and j > 2 and (x[i - 2] == y[j - 1]) and (x[i - 1] == y[j - 3])):
                 D[i][j] = min(D[i][j], D[i -2][j - 3] + 2)
     return D[lenX, lenY]
 
@@ -292,14 +293,15 @@ def damerau_intermediate_edicion(x, y, threshold=None):
             D[i][j] = min(
                 D[i - 1][j] + 1,
                 D[i][j - 1] + 1,
-                D[i - 1][j - 1] + (x[i - 1] != y[j - 1]),
+                D[i - 1][j - 1] + (x[i - 1] != y[j - 1])
             )
-            if((x[i - 1] == y[j - 2]) and (x[i - 2] == y[j - 1]) and i > 1 and j > 1):
+            if(i > 1 and j > 1 and (x[i - 1] == y[j - 2]) and (x[i - 2] == y[j - 1])):
                 D[i][j] = min(D[i][j], D[i - 2][j - 2] + 1)
-            if((x[i - 3] == y[j - 1]) and (x[i - 1] == y[j - 2]) and i > 2 and j > 1):
+            if(i > 2 and j > 1 and (x[i - 3] == y[j - 1]) and (x[i - 1] == y[j - 2])):
                 D[i][j] = min(D[i][j], D[i - 3][j - 2] + 2)
-            if((x[i - 2] == y[j - 1]) and (x[i - 2] == y[j - 1]) and i > 1 and j > 2):
+            if(i > 1 and j > 2 and (x[i - 2] == y[j - 1]) and (x[i - 1] == y[j - 3])):
                 D[i][j] = min(D[i][j], D[i -2][j - 3] + 2)
+
     distancia_damerau_inter = D[lenX, lenY]
 
     i = lenX
@@ -313,7 +315,6 @@ def damerau_intermediate_edicion(x, y, threshold=None):
         valUp  = D[i-1][j]
         valDiagonal  = D[i-1][j-1]
 
-
         if i >= 2 and j >= 2:
             x1 =  x[i-2]
             x2 =  x[i-1]
@@ -324,33 +325,34 @@ def damerau_intermediate_edicion(x, y, threshold=None):
                 res.append(aux)
                 i -= 2
                 j -= 2
-                continue   
+                continue 
 
-        if i >=3 and j>=2 and (valDiagonal != valAtual or valLeft != valAtual or valUp != valAtual): 
+        if i >=3 and j>=2: 
             x1 =  x[i-3]
             x2 =  x[i-2]
             x3 =  x[i-1]
             y1 =  y[j-2]
             y2 =  y[j-1]
-            if y1+y2 in x1+x2+x3  and x1+x2 != y1+y2 and x2+x3 != y1+y2:
+            
+            if y1 == x3 and y2 == x1:
                 aux = (x1+x2+x3, y1+y2)
                 res.append(aux)
                 i-=3
                 j-=2
                 continue
-        if  i >= 2 and j >= 3 and (valDiagonal != valAtual or valLeft != valAtual or valUp != valAtual) :
+       
+        if  i >= 2 and j >= 3:
             x1 =  x[i-2]
             x2 =  x[i-1]
             y1 =  y[j-3]
             y2 =  y[j-2]
             y3 =  y[j-1]
-            if x1+x2 in y1+y2+y3  and x1+x2 != y1+y2 and x1+x2 != y2+y3:
+            if x2 == y1 and x1 == y3:
                 aux = (x1+x2, y1+y2+y3)
                 res.append(aux)
                 i-=2
                 j-=3
                 continue
-            
 
         if valDiagonal <= valUp  and valDiagonal <= valLeft and valDiagonal <= valAtual :
             aux = (x[i-1],y[j-1])
@@ -399,9 +401,9 @@ def damerau_intermediate(x, y, threshold=None):
             )
             if((x[i - 1] == y[j - 2]) and (x[i - 2] == y[j - 1]) and i > 1 and j > 1):
                 Y[i] = min(Y[i], Z[i - 2] + 1)
-            if((x[i - 3] == y[j - 1]) and (x[i - 1] == y[j - 2]) and i > 2 and j > 1):
+            if(i > 2 and j > 1 and (x[i - 3] == y[j - 1]) and (x[i - 1] == y[j - 2])):
                 Y[i] = min(Y[i], Z[i - 3] + 2)
-            if((x[i - 2] == y[j - 1]) and (x[i - 2] == y[j - 1]) and i > 1 and j > 2):
+            if(i > 1 and j > 2 and (x[i - 2] == y[j - 1]) and (x[i - 1] == y[j - 3])):
                 Y[i] = min(Y[i], Z_2[i - 2] + 2)
         if np.min(Y) > threshold:
             return threshold+1
