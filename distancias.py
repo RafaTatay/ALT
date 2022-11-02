@@ -156,7 +156,7 @@ def damerau_restricted_matriz(x, y, threshold=None): #AMPLIACIÓN
                 D[i][j - 1] + 1,
                 D[i - 1][j - 1] + (x[i - 1] != y[j - 1]),
             )
-            if((x[i - 1] == y[j - 2]) and (x[i - 2] == y[j - 1]) and i > 0 and j > 0):
+            if((x[i - 1] == y[j - 2]) and (x[i - 2] == y[j - 1]) and i > 1 and j > 1):
                 D[i][j] = min(D[i][j], D[i - 2][j - 2] + 1)
     return D[lenX, lenY]
 
@@ -333,7 +333,7 @@ def damerau_intermediate_edicion(x, y, threshold=None):
             x3 =  x[i-1]
             y1 =  y[j-2]
             y2 =  y[j-1]
-            
+
             if y1 == x3 and y2 == x1:
                 aux = (x1+x2+x3, y1+y2)
                 res.append(aux)
