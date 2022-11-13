@@ -88,13 +88,8 @@ def levenshtein_reduccion(x, y, threshold=None):
         X[i] = X[i-1] + 1
 
     for j in range(1, lenY + 1):
-        Y[0] = j - 1
-        Y[1] = min(
-                j + 1,
-                X[1] + 1,
-                X[0] + (x[1] != y[1]),
-        )
-        for i in range(2, lenX + 1):
+        Y[0] = j
+        for i in range(1, lenX + 1):
             Y[i] = min(
                 Y[i-1] + 1,
                 X[i] + 1,
@@ -113,13 +108,8 @@ def levenshtein(x, y, threshold):
         X[i] = X[i-1] + 1
 
     for j in range(1, lenY + 1):
-        Y[0] = j - 1
-        Y[1] = min(
-                j + 1,
-                X[1] + 1,
-                X[0] + (x[1] != y[1]),
-        )
-        for i in range(2, lenX + 1):
+        Y[0] = j
+        for i in range(1, lenX + 1):
             Y[i] = min(
                 Y[i-1] + 1,
                 X[i] + 1,
@@ -131,12 +121,43 @@ def levenshtein(x, y, threshold):
     return min(X[lenX],threshold+1) # COMPLETAR Y REEMPLAZAR ESTA PARTE
 
 def levenshtein_cota_optimista(x, y, threshold): #AMPLIACIÓN
-    return 0 # COMPLETAR Y REEMPLAZAR ESTA PARTE
+    aux = set(x)
+    aux.update(set(y))
+
+    res = {
+        -1:0,
+        1:0
+    }
+
+    for a in aux:
+        dif = x.count(a) -y.count(a)
+        if dif < 0:
+            res[-1] += abs(dif)
+        else: res[1] += dif
+
+    maximum = max(res[-1], res[1])
+
+    if maximum > threshold: return threshold +1
+
+    return levenshtein(x,y,threshold)
 
 def damerau_restricted_matriz(x, y, threshold=None): #AMPLIACIÓN
     # completar versión Damerau-Levenstein restringida con matriz
     lenX, lenY = len(x), len(y)
-    # COMPLETAR
+    
+    D = np.zeros((lenX + 1, lenY + 1), dtype=np.int)
+    for i in range(1, lenX + 1):
+        D[i][0] = D[i - 1][0] + 1
+    for j in range(1, lenY + 1):
+        D[0][j] = D[0][j - 1] + 1
+        for i in range(1, lenX + 1):
+            D[i][j] = min(
+                D[i - 1][j] + 1,
+                D[i][j - 1] + 1,
+                D[i - 1][j - 1] + (x[i - 1] != y[j - 1]),
+            )
+            if((x[i - 1] == y[j - 2]) and (x[i - 2] == y[j - 1]) and i > 0 and j > 0):
+                D[i][j] = min(D[i][j], D[i - 2][j - 2] + 1)
     return D[lenX, lenY]
 
 def damerau_restricted_edicion(x, y, threshold=None):
@@ -144,12 +165,56 @@ def damerau_restricted_edicion(x, y, threshold=None):
     # secuencia de operaciones de edición
     return 0,[] # COMPLETAR Y REEMPLAZAR ESTA PARTE
 
-def damerau_restricted(x, y, threshold=None):
+def damerau_restricted(x, y, threshold):
     # versión con reducción coste espacial y parada por threshold
-     return min(0,threshold+1) # COMPLETAR Y REEMPLAZAR ESTA PARTE
+    lenX, lenY = len(x), len(y)
+    X = np.zeros(lenX + 1, dtype=np.int)
+    Y = np.zeros(lenX + 1, dtype=np.int)
+    Z = np.zeros(lenX + 1, dtype=np.int)
+    for i in range(1, lenX + 1):
+        X[i] = X[i-1] + 1
+
+    for j in range(1, lenY + 1):
+        Y[0] = j 
+        Y[1] = min(
+                j + 1,
+                X[1] + 1
+        )
+        for i in range(1, lenX + 1):
+            Y[i] = min(
+                Y[i-1] + 1,
+                X[i] + 1,
+                X[i-1] + (x[i - 1] != y[j - 1])
+            )
+            if((x[i - 1] == y[j - 2]) and (x[i - 2] == y[j - 1]) and i > 1 and j > 1):
+                Y[i] = min(Y[i], Z[i - 2] + 1)
+        if np.min(Y) > threshold:
+            return threshold+1
+        X,Y = Y,X
+        Z,Y = Y,Z
+    return min(X[lenX],threshold+1) # COMPLETAR Y REEMPLAZAR ESTA PARTE
 
 def damerau_intermediate_matriz(x, y, threshold=None):
     # completar versión Damerau-Levenstein intermedia con matriz
+    lenX, lenY = len(x), len(y)
+    
+    D = np.zeros((lenX + 1, lenY + 1), dtype=np.int)
+    for i in range(1, lenX + 1):
+        D[i][0] = D[i - 1][0] + 1
+    for j in range(1, lenY + 1):
+        D[0][j] = D[0][j - 1] + 1
+        for i in range(1, lenX + 1):
+            D[i][j] = min(
+                D[i - 1][j] + 1,
+                D[i][j - 1] + 1,
+                D[i - 1][j - 1] + (x[i - 1] != y[j - 1]),
+            )
+            if((x[i - 1] == y[j - 2]) and (x[i - 2] == y[j - 1]) and i > 1 and j > 1):
+                D[i][j] = min(D[i][j], D[i - 2][j - 2] + 1)
+            if((x[i - 3] == y[j - 1]) and (x[i - 1] == y[j - 2]) and i > 2 and j > 1):
+                D[i][j] = min(D[i][j], D[i - 3][j - 2] + 2)
+            if((x[i - 2] == y[j - 1]) and (x[i - 2] == y[j - 1]) and i > 1 and j > 2):
+                D[i][j] = min(D[i][j], D[i -2][j - 3] + 2)
     return D[lenX, lenY]
 
 def damerau_intermediate_edicion(x, y, threshold=None):
@@ -160,7 +225,38 @@ def damerau_intermediate_edicion(x, y, threshold=None):
     
 def damerau_intermediate(x, y, threshold=None):
     # versión con reducción coste espacial y parada por threshold
-    return min(0,threshold+1) # COMPLETAR Y REEMPLAZAR ESTA PARTE
+    lenX, lenY = len(x), len(y)
+    X = np.zeros(lenX + 1, dtype=np.int)
+    Y = np.zeros(lenX + 1, dtype=np.int)
+    Z = np.zeros(lenX + 1, dtype=np.int)
+    Z_2 = np.zeros(lenX + 1, dtype=np.int)
+    for i in range(1, lenX + 1):
+        X[i] = X[i-1] + 1
+
+    for j in range(1, lenY + 1):
+        Y[0] = j
+        Y[1] = min(
+                j + 1,
+                X[1] + 1
+        ) 
+        for i in range(1, lenX + 1):
+            Y[i] = min(
+                Y[i-1] + 1,
+                X[i] + 1,
+                X[i-1] + (x[i - 1] != y[j - 1])
+            )
+            if((x[i - 1] == y[j - 2]) and (x[i - 2] == y[j - 1]) and i > 1 and j > 1):
+                Y[i] = min(Y[i], Z[i - 2] + 1)
+            if((x[i - 3] == y[j - 1]) and (x[i - 1] == y[j - 2]) and i > 2 and j > 1):
+                Y[i] = min(Y[i], Z[i - 3] + 2)
+            if((x[i - 2] == y[j - 1]) and (x[i - 2] == y[j - 1]) and i > 1 and j > 2):
+                Y[i] = min(Y[i], Z_2[i - 2] + 2)
+        if np.min(Y) > threshold:
+            return threshold+1
+        X,Y = Y,X
+        Z,Z_2 = Z_2,Z
+        Z,Y = Y,Z
+    return min(X[lenX],threshold+1) # COMPLETAR Y REEMPLAZAR ESTA PARTE
 
 opcionesSpell = {
     'levenshtein_m': levenshtein_matriz,
@@ -172,6 +268,7 @@ opcionesSpell = {
     'damerau_im':    damerau_intermediate_matriz,
     'damerau_i':     damerau_intermediate
 }
+
 
 opcionesEdicion = {
     'levenshtein': levenshtein_edicion,

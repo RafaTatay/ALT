@@ -4,9 +4,11 @@ from nltk.stem.snowball import SnowballStemmer
 import os
 import re
 import numpy as np
+#import distancias
 
 # ALGORITMICA
 from spellsuggester import SpellSuggester
+from distancias import *
 
 #Participantes: Kléber Zapata Zambrano, Rafael Estellés Tatay, Noelia Saugar Villar.
 
@@ -31,6 +33,8 @@ class SAR_Project:
     
     # numero maximo de documento a mostrar cuando self.show_all es False
     SHOW_MAX = 10
+    
+    
 
 
     def __init__(self):
@@ -78,10 +82,11 @@ class SAR_Project:
         self.distance = None
         self.threshold = None
 
-        self.speller = SpellSuggester()
+        self.speller = SpellSuggester(dist_functions = opcionesSpell)
+        
         
 
-         
+   
 
 
     ###############################
@@ -91,6 +96,16 @@ class SAR_Project:
     ###############################
         self.doc_cont = 0
         self.new_cont = 0
+     #Búsqueda con tolerancia
+    def set_spelling(self, use_spelling, distance, threshold): 
+        """ 
+        self.use_spelling a True se activa la corrección ortográfica
+        EN LAS PALABRAS NO ENCONTRADAS, en caso contrario NO utilizará
+        correción ortográfica  
+        """
+        self.use_spelling = use_spelling
+        self.distance = distance
+        self.threshold = threshold
     def set_showall(self, v):
         """
 
@@ -190,7 +205,10 @@ class SAR_Project:
         # Activamos funcion stemming
         if self.stemming:
             self.make_stemming()
-        #Algoritmica
+        
+        #ALGORÍTMICA   
+        self.speller.set_vocabulary(list(self.index['article'].keys()))
+        
         
         
         
@@ -277,6 +295,9 @@ class SAR_Project:
                 posicion_not = posicion_not + 1 #la posicion crece en uno ya que vamos a pasar a la siguiente noticia
                 self.newid = self.newid + 1 #newid tambien suma uno porque pasa a la siguiente noticia
             self.docid = self.docid + 1
+        
+        
+        
             
         
 
@@ -660,6 +681,7 @@ class SAR_Project:
         ## COMPLETAR PARA TODAS LAS VERSIONES ##
         ########################################
         posting = []
+        #lista = []
         if self.stemming and not wildcard:
             posting = self.get_stemming(term,field)
            # print(posting)
@@ -668,14 +690,36 @@ class SAR_Project:
             return posting
        #FALTA EL DE POSICIONALES 
         else:
-            posting = self.index[field].get(term, []) #implementación para la entrega obligatoria 
-            lista = [] 
-            if posting ==[]: return []  
-            for key, value in posting.items():
-                entry = (key, value)
-                lista.append(entry)
+            if term in self.index[field]:
+                posting = self.index[field].get(term, []) #implementación para la entrega obligatoria
+                #for key, value in posting.items():
+                        #entry = (key, value)
+                        #lista.append(entry)
+                return list(posting.keys())
+        #ALGORITMICA
+        if self.use_spelling and posting == []:
+            #aux = []  #para guardar las palabras sugeridas
+            aux = self.speller.suggest(term, self.distance, self.threshold, flatten=True)
+            #if aux == []: return []
+           # else: 
+               # res = ""   #para agrupar la consulta OR
+                #count = 1
+                #for a in aux:
+                   # if len(aux) < count:
+                        #res += a +  " OR "
+                    #else:
+                        #res += a
+                    #count = count + 1  #evitar un OR extra
+                #return self.solve_query(res)
+            for a in aux:
+                posting = self.or_posting(posting, self.get_posting(a))
+        #else:
+           # return []
+        return posting
+       # return list(posting.keys())
+                        
+            
         
-            return list(posting.keys())
 
     def set_spelling(self, use_spelling, distance, threshold):
         """
