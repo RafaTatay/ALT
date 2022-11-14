@@ -118,7 +118,7 @@ def levenshtein(x, y, threshold):
         if np.min(Y) > threshold:
             return threshold+1
         X,Y = Y,X
-    return min(X[lenX],threshold+1) # COMPLETAR Y REEMPLAZAR ESTA PARTE
+    return min(X[lenX],threshold+1)
 
 def levenshtein_cota_optimista(x, y, threshold): #AMPLIACIÓN
     aux = set(x)
@@ -155,7 +155,7 @@ def damerau_restricted_matriz(x, y, threshold=None): #AMPLIACIÓN
                 D[i][j - 1] + 1,
                 D[i - 1][j - 1] + (x[i - 1] != y[j - 1])
             )
-            if((x[i - 1] == y[j - 2]) and (x[i - 2] == y[j - 1]) and i > 1 and j > 1):
+            if(i > 1 and j > 1 and (x[i - 1] == y[j - 2]) and (x[i - 2] == y[j - 1])):
                 D[i][j] = min(D[i][j], D[i - 2][j - 2] + 1)
     return D[lenX, lenY]
 
@@ -174,11 +174,7 @@ def damerau_restricted(x, y, threshold):
         X[i] = X[i-1] + 1
 
     for j in range(1, lenY + 1):
-        Y[0] = j 
-        Y[1] = min(
-                j + 1,
-                X[1] + 1
-        )
+        Y[0] = j
         for i in range(1, lenX + 1):
             Y[i] = min(
                 Y[i-1] + 1,
@@ -195,22 +191,6 @@ def damerau_restricted(x, y, threshold):
 
 def damerau_intermediate_matriz(x, y, threshold=None):
     # completar versión Damerau-Levenstein intermedia con matriz
-    '''
-    D = np.zeros((lenX + 1, lenY + 1), dtype=np.int)
-    for i in range(1, lenX + 1):
-        D[i][0] = D[i - 1][0] + 1
-    for j in range(1, lenY + 1):
-        D[0][j] = D[0][j - 1] + 1
-        for i in range(1, lenX + 1):
-            D[i][j] = min(
-                D[i - 1][j] + 1,
-                D[i][j - 1] + 1,
-                D[i - 1][j - 1] + (x[i - 1] != y[j - 1])
-            )
-            if((x[i - 1] == y[j - 2]) and (x[i - 2] == y[j - 1]) and i > 1 and j > 1):
-                D[i][j] = min(D[i][j], D[i - 2][j - 2] + 1)
-    return D[lenX, lenY]
-    '''
     lenX, lenY = len(x), len(y)
     
     D = np.zeros((lenX + 1, lenY + 1), dtype=np.int)
@@ -250,17 +230,13 @@ def damerau_intermediate(x, y, threshold=None):
 
     for j in range(1, lenY + 1):
         Y[0] = j
-        Y[1] = min(
-                j + 1,
-                X[1] + 1
-        ) 
         for i in range(1, lenX + 1):
             Y[i] = min(
                 Y[i-1] + 1,
                 X[i] + 1,
                 X[i-1] + (x[i - 1] != y[j - 1])
             )
-            if((x[i - 1] == y[j - 2]) and (x[i - 2] == y[j - 1]) and i > 1 and j > 1):
+            if(i > 1 and j > 1 and (x[i - 1] == y[j - 2]) and (x[i - 2] == y[j - 1])):
                 Y[i] = min(Y[i], Z[i - 2] + 1)
             if(i > 2 and j > 1 and (x[i - 3] == y[j - 1]) and (x[i - 1] == y[j - 2])):
                 Y[i] = min(Y[i], Z[i - 3] + 2)
