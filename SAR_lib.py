@@ -688,35 +688,20 @@ class SAR_Project:
         elif '*' in term or '?' in term:  
             posting = self.get_permuterm(term,field)
             return posting
-       #FALTA EL DE POSICIONALES 
+        
         else:
             if term in self.index[field]:
-                posting = self.index[field].get(term, []) #implementación para la entrega obligatoria
-                #for key, value in posting.items():
-                        #entry = (key, value)
-                        #lista.append(entry)
+                posting = self.index[field].get(term, []) 
                 return list(posting.keys())
         #ALGORITMICA
         if self.use_spelling and posting == []:
             #aux = []  #para guardar las palabras sugeridas
             aux = self.speller.suggest(term, self.distance, self.threshold, flatten=True)
-            #if aux == []: return []
-           # else: 
-               # res = ""   #para agrupar la consulta OR
-                #count = 1
-                #for a in aux:
-                   # if len(aux) < count:
-                        #res += a +  " OR "
-                    #else:
-                        #res += a
-                    #count = count + 1  #evitar un OR extra
-                #return self.solve_query(res)
             for a in aux:
                 posting = self.or_posting(posting, self.get_posting(a))
-        #else:
-           # return []
+         
         return posting
-       # return list(posting.keys())
+       
                         
             
         

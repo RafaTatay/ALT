@@ -78,25 +78,18 @@ class SpellSuggester:
         ########################################
         # COMPLETAR
 
-        #La lista i-ésima contiene las palabras a distancia i
-        
-        
-        
         resul = []    #las palabras que tienen distancia i
 
         for i in range(0, threshold+1):
             resul.append([])
-            
-    
-
+        
         for pal in self.vocabulary:
             dist = distancias.opcionesSpell[distance](term, pal, threshold)
             #if not pal.isdigit():
             for i in range(0, threshold+1):
                  if dist == i:
                     resul[i].append(pal)
-            
-         
+        
         if flatten:
             resul = [word for wlist in resul for word in wlist]
         
